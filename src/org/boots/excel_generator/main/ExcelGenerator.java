@@ -1,7 +1,7 @@
 package org.boots.excel_generator.main;
 
-import org.boots.excel_generator.utils.ExcelManager;
-import org.boots.excel_generator.utils.XMLparser;
+import org.boots.excel_generator.managers.ExcelManager;
+import org.boots.excel_generator.managers.XMLmanager;
 
 public class ExcelGenerator {
 
@@ -24,7 +24,7 @@ public class ExcelGenerator {
 			excelManager.generateEmptyExcel();
 			excelManager.initExcel();
 			
-			XMLparser parser = new XMLparser(xmlFileName, path);
+			XMLmanager parser = new XMLmanager(xmlFileName, path);
 			String[] row = parser.getRow();
 			
 			while((row != null) && (row.length > 0)){

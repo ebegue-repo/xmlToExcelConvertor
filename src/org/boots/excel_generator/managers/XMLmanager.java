@@ -1,4 +1,4 @@
-package org.boots.excel_generator.utils;
+package org.boots.excel_generator.managers;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,13 +14,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class XMLparser {
+import orgs.boots.excel_generator.beans.Fault;
+
+public class XMLmanager {
 	
 	private File xmlFile = null;
 	private Document doc = null;
 	private int rowNumber = 0;
+	private Fault[] faultList = null;
 	
-	public XMLparser(String fileName, String absolutePath){
+	public XMLmanager(String fileName, String absolutePath){
 		String completePath = absolutePath + "/" + fileName + ".xml";
 		this.xmlFile = new File(completePath);
 		
@@ -29,6 +32,10 @@ public class XMLparser {
 	        DocumentBuilder dBuilder;
 			dBuilder = dbFactory.newDocumentBuilder();
 			this.doc = dBuilder.parse(this.xmlFile);
+			
+			// Getting fault list
+			this.getFaultList();
+			
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,12 +56,13 @@ public class XMLparser {
         String logLevel = "";
         String httpCode = "";
         String faultID = "";
+        Node faultID_node = null;
         String data = "";
         String logCode = "";
         String logMessage = "";
         String stades = "";
         NamedNodeMap attributes = null;
-		
+        
 		NodeList nodeList = doc.getElementsByTagName("statuslist");
         Node node = nodeList.item(0);
         Element element = (Element) node;
@@ -107,13 +115,15 @@ public class XMLparser {
         	}
         	
         	// Returned data
-        	faultID = attributes.getNamedItem("faultid").getNodeValue();
+        	faultID_node = attributes.getNamedItem("faultid");
         	
-        	if(faultID.equals("1") || faultID.equals("2") ||faultID.equals("4")){
-        		data = "SOAP fault";
-        	}else{
-        		data = "-";
+        	// There are old statusList files using the "soapfaultid" tag instead of "faultid"
+        	if(faultID_node == null){
+        		faultID_node = attributes.getNamedItem("soapfaultid");
         	}
+        	
+        	faultID = faultID_node.getNodeValue();
+        	data = this.getFaultValue(Integer.parseInt(faultID));
         	
         	// Transaction log code
         	logCode = attributes.getNamedItem("logdes").getNodeValue();
@@ -126,5 +136,80 @@ public class XMLparser {
         }else{
         	return null;
         }
+	}
+	
+	private void getFaultList(){
+		NamedNodeMap attributes = null;
+		String id = "";
+		String format = "";
+		
+		NodeList faultNodeList = doc.getElementsByTagName("faultlist");
+        Node node = faultNodeList.item(0);
+        
+        // Elements
+        Element element = (Element) node;
+        NodeList faultElement = element.getElementsByTagName("fault");
+        
+        int numElements = faultElement.getLength(); 
+        this.faultList = new Fault[numElements];
+        Fault fault = null;
+        
+        for(int i = 0; i < numElements; i++){
+        	attributes = faultElement.item(i).getAttributes();
+        	id = attributes.getNamedItem("id").getNodeValue();
+        	format = attributes.getNamedItem("format").getNodeValue();
+        	
+        	// Saving the fault item
+        	fault = new Fault();
+        	fault.setFormat(format);
+        	fault.setId(Integer.parseInt(id));
+        	this.faultList[i] = fault;
+        }
+	}
+	
+	private String getFaultValue(int id){
+		
+		int i = 0;
+		Fault fault = null;
+		String format = "";
+		boolean success = false;
+		
+		while((i < this.faultList.length) && !success){
+			fault = this.faultList[i];
+			if(fault.getId() == id){
+				success = true;
+			}
+			i++;
+		}
+		
+		if(success){
+			format = fault.getFormat();
+			
+			if(format.equals("-")){
+				return "-";
+			}else{
+				if(format.equals("s")){
+					return "SOAP fault";
+				}else{
+					if(format.equals("j")){
+						return "JSON fault";
+					}else{
+						if(format.equals("x")){
+							return "XML fault";
+						}else{
+							if(format.equals("h")){
+								return "Fault in HTTP headers";
+							}else{
+								System.out.println("Undefined fault format");
+								return "?";
+							}
+						}
+					}
+				}
+			}
+		}else{
+			System.out.println("Undefined fault ID");
+			return "?";
+		}
 	}
 }

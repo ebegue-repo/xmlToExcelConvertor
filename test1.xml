@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+   <!-- ALL ENVIRONMENTS -->
+   <!-- if exist logleveldebug label, loglevel is set to "e" in error handler-->
+   <!-- logleveldebugok/ -->
+   <!-- logleveldebugerror/ -->
+   
+   <!-- 
+        Fault formats:
+        + format="-" : Empty body (HTTP headers only)
+        + format="s" : SOAP envelope fault
+        + format="j" : JSON fault
+        + format="x" : XML error file
+        + format="h" : Empty body. All error info in HTTP headers.
+   
+        Detail levels:
+        + detail="s" : Standard
+		+ detail="e" : Empty values
+		+ detail="v" : Verbose (include error description)
+   -->
+   
+   <!-- Type of Replies -->
+   <faultlist>
+      <fault id="0" format="-" detail="s" faultactor=""   faultcode="" />
+      <fault id="1" format="s" detail="s" faultactor="IG" faultcode="Client" />
+      <fault id="2" format="s" detail="s" faultactor="IG" faultcode="Server" />
+      <fault id="3" format="-" detail="s" faultactor="IG" faultcode="Client. Http method not allowed" />
+      <fault id="4" format="s" detail="e" faultactor="IG" faultcode="Client. Request body empty" />
+      
+   </faultlist>
+   
+   <httpCodeErrorReason>
+      <httpcode id="400"   errorReason="Bad Request"/>
+      <httpcode id="500"   errorReason="Internal Server Error"/>
+   </httpCodeErrorReason>
+   
+   <statuslist>
+      <!--Ok -->
+      <status number="0"   sta="0" exit="n" loglevel="i" httpcode="200" logdes="--" stades="End process ok" />
+
+      <status number="x3010" sta="x" exit="x" loglevel="x" httpcode="x"   logdes="ESG_CCS_ASY_REC_001" faultid="0" stades="Receive_Scope. Catch All" />
+      <status number="x3011" sta="x" exit="x" loglevel="x" httpcode="x"   logdes="ESG_CCS_ASY_STA_001" faultid="0" stades="StatusList_Scope. documentFault" />
+      <status number="x3012" sta="x" exit="x" loglevel="x" httpcode="x"   logdes="ESG_CCS_ASY_STA_002" faultid="0" stades="StatusList_Scope. Catch All" />
+
+      <!--Status format: e9999. Internal Errors. Manage from file -->
+      
+      <status number="e1000" sta="2" exit="y" loglevel="e" httpcode="500" logdes="ESG_CCS_ASY_DIF_001" faultid="2" stades="DynamicInvocation_Scope. documentFault" />
+      <status number="e1001" sta="2" exit="y" loglevel="i" httpcode="500" logdes="ESG_CCS_ASY_DIF_002" faultid="2" stades="DynamicInvocation_Scope. Catch All" />
+      
+      <status number="e1002" sta="2" exit="y" loglevel="i" httpcode="500" logdes="ESG_CCS_ASY_MDT_001" faultid="2" stades="MetaData_Scope. Catch All" />
+      
+      <status number="e1003" sta="2" exit="y" loglevel="w" httpcode="400" logdes="ESG_CCS_ASY_QOS_001" faultid="0" stades="QoS_Scope. qosNoServiceLevelMatchFault" />
+      <status number="e1004" sta="2" exit="y" loglevel="w" httpcode="400" logdes="ESG_CCS_ASY_QOS_002" faultid="0" stades="QoS_Scope. qosQueueDepthExceededFault" />
+      <status number="e1005" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_QOS_003" faultid="0" stades="QoS_Scope. qosRejectActionFault" />
+      <status number="e1006" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_QOS_004" faultid="0" stades="QoS_Scope. qosUserActionFault" />
+      <status number="e1007" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_QOS_005" faultid="0" stades="QoS_Scope. Catch All" />
+      
+      <status number="e1008" sta="2" exit="y" loglevel="w" httpcode="400" logdes="ESG_CCS_ASY_CAP_001" faultid="1" detail="v" stades="CAP_Scope. contentAttackPreventionFault" />
+      <status number="e1009" sta="2" exit="y" loglevel="e" httpcode="500" logdes="ESG_CCS_ASY_CAP_002" faultid="0" stades="CAP_Scope. resourceFault" />
+      <status number="e1010" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_CAP_003" faultid="0" stades="CAP_Scope. wssecHeaderMissedFault" />
+      <status number="e1011" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_CAP_004" faultid="2" stades="CAP_Scope. Catch All" />
+      
+      <status number="e1012" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_AAA_001" faultid="0" stades="AAA_Scope. aaaLdapAuthenticationFault" />
+      <status number="e1013" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_AAA_002" faultid="0" stades="AAA_Scope. aaaLdapAuthorizationFault" />
+      <status number="e1014" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_AAA_003" faultid="0" stades="AAA_Scope. aaaCannotExtractIdentityFault" />
+      <status number="e1015" sta="2" exit="y" loglevel="i" httpcode="400" logdes="ESG_CCS_ASY_AAA_004" faultid="2" stades="AAA_Scope. Catch All" />
+      
+      <status number="e1016" sta="2" exit="y" loglevel="i" httpcode="500" logdes="ESG_CCS_ASY_CRE_001" faultid='2' stades="RemoveCredentials_Scope. Catch All" />
+      
+      <status number="e1017" sta="2" exit="y" loglevel="e" httpcode="500" logdes="ESG_CCS_ASY_INV_001" faultid="2" stades="Invocation_Scope. invocationAgentFault" />
+      <status number="e1018" sta="2" exit="y" loglevel="e" httpcode="500" logdes="ESG_CCS_ASY_INV_002" faultid="2" stades="Invocation_Scope. appointmentNotificationServiceExceptionFault" />
+      <status number="e1019" sta="2" exit="y" loglevel="e" httpcode="500" logdes="ESG_CCS_ASY_INV_003" faultid="2" stades="Invocation_Scope. soapEnvelopeParsingErrorFault" />
+      <status number="e1020" sta="2" exit="y" loglevel="e" httpcode="500" logdes="ESG_CCS_ASY_INV_004" faultid="2" stades="Invocation_Scope. Catch All" />
+      
+      <status number="e1021" sta="2" exit="y" loglevel="i" httpcode="500" logdes="ESG_CCS_ASY_REP_001" faultid="2" stades="Reply_Scope. Catch All" />
+      
+      <!--Errors INVOKES -->
+   </statuslist>
+</config>
